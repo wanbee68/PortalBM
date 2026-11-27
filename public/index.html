@@ -8,6 +8,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Penjana PDF dijalankan di pelayar; jawapan tidak dihantar ke pelayan portal. -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/3.0.3/jspdf.umd.min.js" defer></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -154,15 +157,32 @@
                 <p class="text-sm font-bold text-blue-300"><span id="jumlahPerkataanSPMU">0</span> patah perkataan</p>
             </div>
             <textarea id="teksJawapanSPMU" oninput="kiraPerkataanSPMU()" class="ruang-jawapan-bergaris flex-1 min-h-0 w-full resize-none border-0 px-5 py-2.5 text-gray-900 text-base sm:text-lg focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-400" placeholder="Taip jawapan anda di sini..."></textarea>
-            <div class="p-4 bg-zinc-900 border-t border-zinc-800 grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-3 items-end">
-                <div>
+            <div class="p-4 bg-zinc-900 border-t border-zinc-800 space-y-3">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                        <label for="namaPelajarSPMU" class="block text-xs font-bold text-gray-200 mb-1.5">Nama pelajar</label>
+                        <input id="namaPelajarSPMU" type="text" autocomplete="name" class="w-full bg-zinc-950 border border-zinc-700 p-2.5 rounded-xl text-sm text-white focus:border-blue-400 outline-none" placeholder="Nama penuh">
+                    </div>
+                    <div>
+                        <label for="kelasPelajarSPMU" class="block text-xs font-bold text-gray-200 mb-1.5">Kelas</label>
+                        <input id="kelasPelajarSPMU" type="text" class="w-full bg-zinc-950 border border-zinc-700 p-2.5 rounded-xl text-sm text-white focus:border-blue-400 outline-none" placeholder="Contoh: 5 Ibnu Sina">
+                    </div>
+                    <div>
+                        <label for="tarikhJawapanSPMU" class="block text-xs font-bold text-gray-200 mb-1.5">Tarikh</label>
+                        <input id="tarikhJawapanSPMU" type="date" class="w-full bg-zinc-950 border border-zinc-700 p-2.5 rounded-xl text-sm text-white focus:border-blue-400 outline-none">
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-3 items-end">
+                    <div>
                     <label for="nomborWhatsAppGuruSPMU" class="block text-xs font-bold text-gray-200 mb-1.5">Nombor WhatsApp guru</label>
                     <input id="nomborWhatsAppGuruSPMU" type="tel" inputmode="tel" autocomplete="tel" class="w-full bg-zinc-950 border border-zinc-700 p-3 rounded-xl text-sm text-white focus:border-blue-400 outline-none" placeholder="Contoh: 60123456789 (tanpa + atau sengkang)">
                     <p id="ralatJawabSPMU" class="hidden mt-1.5 text-xs text-red-300" role="status"></p>
                     <a id="pautanWhatsAppSPMU" class="hidden mt-2 text-sm text-green-300 underline" target="_blank" rel="noopener noreferrer">Klik di sini untuk buka WhatsApp</a>
+                    </div>
+                    <button id="butangHantarPDFSPMU" onclick="hantarJawapanWhatsAppSPMU()" class="bg-green-500 text-white px-5 py-3 rounded-xl font-extrabold text-sm hover:bg-green-600 transition focus:outline-none">Jana PDF & WhatsApp ↗</button>
                 </div>
-                <button onclick="hantarJawapanWhatsAppSPMU()" class="bg-green-500 text-white px-5 py-3 rounded-xl font-extrabold text-sm hover:bg-green-600 transition focus:outline-none">Hantar ke WhatsApp ↗</button>
-                <p class="sm:col-span-2 text-[11px] text-gray-400">WhatsApp akan dibuka dengan jawapan terisi. Tekan <strong>Hantar</strong> di WhatsApp untuk menghantarnya kepada guru.</p>
+                <p id="statusHantarPDFSPMU" class="hidden text-xs text-blue-200" role="status"></p>
+                <p class="text-[11px] text-gray-400">PDF akan dimuat turun. Lampirkan fail itu dalam WhatsApp, kemudian tekan <strong>Hantar</strong>.</p>
             </div>
         </div>
     </div>
@@ -345,6 +365,11 @@
             document.getElementById('labelKertasJawapanSPMU').textContent = `SPMU 2026 · ${failSPMU[kertasAktifSPMU].nama.toUpperCase()}`;
             document.getElementById('ralatJawabSPMU').classList.add('hidden');
             document.getElementById('pautanWhatsAppSPMU').classList.add('hidden');
+            document.getElementById('statusHantarPDFSPMU').classList.add('hidden');
+            if (!document.getElementById('tarikhJawapanSPMU').value) {
+                const hariIni = new Date();
+                document.getElementById('tarikhJawapanSPMU').value = `${hariIni.getFullYear()}-${String(hariIni.getMonth() + 1).padStart(2, '0')}-${String(hariIni.getDate()).padStart(2, '0')}`;
+            }
             const modal = document.getElementById('modalJawabSPMU');
             modal.classList.remove('hidden');
             modal.classList.add('flex');
@@ -363,19 +388,69 @@
             document.getElementById('jumlahPerkataanSPMU').textContent = jumlah;
         }
 
-        function hantarJawapanWhatsAppSPMU() {
+        function binaPDFJawapanSPMU({ nama, kelas, tarikh, jawapan, kertas, jumlah }) {
+            const { jsPDF } = window.jspdf || {};
+            if (!jsPDF) throw new Error('Penjana PDF belum dimuatkan. Semak sambungan internet dan cuba lagi.');
+
+            const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+            const kandungan = document.createElement('div');
+            kandungan.style.cssText = 'box-sizing:border-box;width:760px;padding:36px;background:#ffffff;color:#111827;font-family:Arial,sans-serif;';
+
+            const tajuk = document.createElement('h1');
+            tajuk.textContent = `JAWAPAN SPMU 2026 - ${kertas.toUpperCase()}`;
+            tajuk.style.cssText = 'font-size:26px;margin:0 0 20px;color:#111827;';
+            kandungan.appendChild(tajuk);
+
+            const butiran = document.createElement('div');
+            butiran.style.cssText = 'font-size:17px;line-height:1.7;margin-bottom:22px;';
+            [["Nama", nama], ["Kelas", kelas], ["Tarikh", tarikh], ["Jumlah perkataan", String(jumlah)]]
+                .forEach(([label, nilai]) => {
+                    const baris = document.createElement('div');
+                    const tebal = document.createElement('strong');
+                    tebal.textContent = `${label}: `;
+                    baris.append(tebal, document.createTextNode(nilai));
+                    butiran.appendChild(baris);
+                });
+            kandungan.appendChild(butiran);
+
+            const ruang = document.createElement('div');
+            ruang.textContent = jawapan;
+            ruang.style.cssText = 'white-space:pre-wrap;overflow-wrap:anywhere;min-height:740px;padding:12px 16px;font-size:17px;line-height:34px;background-color:#fff;background-image:repeating-linear-gradient(to bottom,#fff 0,#fff 33px,#60a5fa 33px,#60a5fa 34px);';
+            kandungan.appendChild(ruang);
+            kandungan.style.position = 'fixed';
+            kandungan.style.left = '-10000px';
+            kandungan.style.top = '0';
+            document.body.appendChild(kandungan);
+
+            return { doc, kandungan };
+        }
+
+        async function hantarJawapanWhatsAppSPMU() {
             const medanNombor = document.getElementById('nomborWhatsAppGuruSPMU');
+            const nama = document.getElementById('namaPelajarSPMU').value.trim();
+            const kelas = document.getElementById('kelasPelajarSPMU').value.trim();
+            const tarikhISO = document.getElementById('tarikhJawapanSPMU').value;
             const jawapan = document.getElementById('teksJawapanSPMU').value.trim();
             const ralat = document.getElementById('ralatJawabSPMU');
             const pautan = document.getElementById('pautanWhatsAppSPMU');
+            const status = document.getElementById('statusHantarPDFSPMU');
+            const butang = document.getElementById('butangHantarPDFSPMU');
             ralat.textContent = '';
             ralat.classList.add('hidden');
             pautan.classList.add('hidden');
+            status.textContent = '';
+            status.classList.add('hidden');
 
             if (!jawapan) {
                 ralat.textContent = 'Sila taip jawapan dahulu.';
                 ralat.classList.remove('hidden');
                 document.getElementById('teksJawapanSPMU').focus();
+                return;
+            }
+            if (!nama || !kelas || !tarikhISO) {
+                ralat.textContent = 'Sila lengkapkan nama, kelas dan tarikh.';
+                ralat.classList.remove('hidden');
+                (nama ? (kelas ? document.getElementById('tarikhJawapanSPMU') : document.getElementById('kelasPelajarSPMU')) : document.getElementById('namaPelajarSPMU')).focus();
                 return;
             }
 
@@ -390,15 +465,47 @@
             }
 
             const kertas = failSPMU[kertasAktifSPMU].nama;
-            const mesej = `Salam cikgu, berikut jawapan saya untuk SPMU 2026 ${kertas}:\n\n${jawapan}\n\nJumlah perkataan: ${document.getElementById('jumlahPerkataanSPMU').textContent}`;
+            const jumlah = document.getElementById('jumlahPerkataanSPMU').textContent;
+            const tarikh = new Date(`${tarikhISO}T00:00:00`).toLocaleDateString('ms-MY');
+            const mesej = `Salam cikgu. Saya menghantar jawapan SPMU 2026 ${kertas}.\nNama: ${nama}\nKelas: ${kelas}\nTarikh: ${tarikh}\nJumlah perkataan: ${jumlah}\nSaya lampirkan jawapan dalam fail PDF.`;
             const urlWhatsApp = `https://wa.me/${nombor}?text=${encodeURIComponent(mesej)}`;
-            pautan.href = urlWhatsApp;
-            const tetingkap = window.open(urlWhatsApp, '_blank');
-            if (tetingkap) tetingkap.opener = null;
-            else {
-                pautan.classList.remove('hidden');
-                ralat.textContent = 'Pelayar menyekat tetingkap baharu. Gunakan pautan WhatsApp yang dipaparkan di atas.';
+            const tetingkapWhatsApp = window.open('about:blank', '_blank');
+            let kandunganPDF;
+            butang.disabled = true;
+            butang.textContent = 'Menjana PDF...';
+
+            try {
+                kandunganPDF = binaPDFJawapanSPMU({ nama, kelas, tarikh, jawapan, kertas, jumlah });
+                await kandunganPDF.doc.html(kandunganPDF.kandungan, {
+                    x: 0,
+                    y: 0,
+                    width: 190,
+                    windowWidth: 760,
+                    margin: [10, 10, 12, 10],
+                    autoPaging: 'text',
+                    html2canvas: { scale: 1.5, backgroundColor: '#ffffff', logging: false }
+                });
+                const namaFail = `Jawapan_SPMU_2026_${kertas.replace(/\s+/g, '_')}_${tarikhISO}.pdf`;
+                kandunganPDF.doc.save(namaFail);
+
+                if (tetingkapWhatsApp) {
+                    tetingkapWhatsApp.location.href = urlWhatsApp;
+                    tetingkapWhatsApp.opener = null;
+                } else {
+                    pautan.href = urlWhatsApp;
+                    pautan.classList.remove('hidden');
+                }
+
+                status.textContent = `PDF ${namaFail} telah dimuat turun. Lampirkan fail itu dalam WhatsApp sebelum menekan Hantar.`;
+                status.classList.remove('hidden');
+            } catch (ralatPdf) {
+                if (tetingkapWhatsApp) tetingkapWhatsApp.close();
+                ralat.textContent = ralatPdf.message || 'PDF tidak berjaya dijana. Sila cuba lagi.';
                 ralat.classList.remove('hidden');
+            } finally {
+                if (kandunganPDF?.kandungan) kandunganPDF.kandungan.remove();
+                butang.disabled = false;
+                butang.textContent = 'Jana PDF & WhatsApp ↗';
             }
         }
 
