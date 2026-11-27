@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Digital Kelas Bahasa Melayu MRSMKu</title>
+    <!-- Tailwind CSS untuk Rekabentuk Responsif & Moden -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0d0d0d;
+            background-image: radial-gradient(circle at top, #1a1a10 0%, #0d0d0d 100%);
+        }
+        /* Kesan khas glow bertema kuning emas */
+        .glow-hover:hover {
+            box-shadow: 0 0 20px rgba(253, 224, 71, 0.4);
+            transform: translateY(-4px);
+        }
+        .glow-white:hover {
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+            transform: translateY(-4px);
+        }
+        /* Sembunyikan scrollbar untuk pengalaman UI bersih */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        /* Animasi pusingan untuk ikon loading */
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+    </style>
+</head>
+<body class="text-white min-h-screen flex flex-col justify-between">
+
+    <!-- Container Utama -->
+    <div class="container mx-auto px-4 py-8 max-w-5xl flex-grow flex flex-col items-center">
+        
+        <!-- Bahagian Atas: Logo & Tajuk Portal -->
+        <header class="text-center mb-10 flex flex-col items-center">
+            <!-- Logo Bulat MRSM (Direka khas menggunakan SVG untuk kelajuan & resolusi tajam) -->
+            <div class="w-24 h-24 rounded-full bg-black border-4 border-yellow-400 flex items-center justify-center shadow-lg shadow-yellow-400/20 mb-4 overflow-hidden">
+                <svg class="w-16 h-16 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                </svg>
+            </div>
+            
+            <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-wider text-yellow-400 mb-2">
+                PORTAL DIGITAL
+            </h1>
+            <p class="text-lg sm:text-xl md:text-2xl font-semibold tracking-wide text-gray-300">
+                KELAS BAHASA MELAYU MRSMKu
+            </p>
+            <div class="h-1 w-20 bg-yellow-400 mt-3 rounded-full"></div>
+        </header>
+
+        <!-- Bahagian Butang Utama (Grid) -->
+        <!-- Memaparkan 7 butang yang responsif: 1 lajur di telefon pintar, 2 atau 3 lajur di skrin besar -->
+        <main class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full max-w-4xl px-2 mb-12">
+            
+            <!-- 1. BAHAN LATIHAN (Kuning) -->
+            <a href="PAUTAN_GOOGLE_DRIVE_BAHAN_LATIHAN_DI_SINI" target="_blank" class="button-link bg-yellow-400 text-black font-extrabold text-lg py-5 px-6 rounded-2xl flex flex-col items-center justify-center text-center transition-all duration-300 glow-hover">
+                <span class="text-xs tracking-widest text-black/60 uppercase mb-1">Fail Rujukan</span>
+                <span class="text-xl">BAHAN LATIHAN</span>
+            </a>
+
+            <!-- 2. TIP-TIP DAN TEKNIK (Putih) -->
+            <a href="PAUTAN_GOOGLE_DRIVE_TIP_TIP_TEKNIK_DI_SINI" target="_blank" class="button-link bg-white text-black font-extrabold text-lg py-5 px-6 rounded-2xl flex flex-col items-center justify-center text-center transition-all duration-300 glow-white">
+                <span class="text-xs tracking-widest text-black/60 uppercase mb-1">Nota Padat</span>
+                <span class="text-xl">TIP-TIP DAN TEKNIK</span>
+            </a>
+
+            <!-- 3. CHATBOT BAHASAKu (Kuning - Ciri AI Bersepadu) -->
+            <button onclick="bukaModalAI('chatbot')" class="bg-yellow-400 text-black font-extrabold text-lg py-5 px-6 rounded-2xl flex flex-col items-center justify-center text-center transition-all duration-300 glow-hover focus:outline-none">
+                <span class="text-xs tracking-widest text-black/60 uppercase mb-1">Tutor Pintar AI ✨</span>
+                <span class="text-xl">CHATBOT BAHASAKu</span>
+            </button>
+
+            <!-- 4. BETUL KE SALAH? (Putih - Ciri AI Penyemak Tatabahasa) -->
+            <button onclick="bukaModalAI('semak')" class="bg-white text-black font-extrabold text-lg py-5 px-6 rounded-2xl flex flex-col items-center justify-center text-center transition-all duration-300 glow-white focus:outline-none">
+                <span class="text-xs tracking-widest text-black/60 uppercase mb-1">Uji Tatabahasa ✨</span>
+                <span class="text-xl">BETUL KE SALAH?</span>
+            </button>
+
+            <!-- 5. PRETASIKu (Kuning) -->
+            <a href="PAUTAN_GOOGLE_DRIVE_PRESTASIKU_DI_SINI" target="_blank" class="button-link bg-yellow-400 text-black font-extrabold text-lg py-5 px-6 rounded-2xl flex flex-col items-center justify-center text-center transition-all duration-300 glow-hover">
+                <span class="text-xs tracking-widest text-black/60 uppercase mb-1">Markah & Gred</span>
+                <span class="text-xl">PRETASIKu</span>
+            </a>
+
+            <!-- 6. ANALISIS (Putih) -->
+            <a href="PAUTAN_GOOGLE_DRIVE_ANALISIS_DI_SINI" target="_blank" class="button-link bg-white text-black font-extrabold text-lg py-5 px-6 rounded-2xl flex flex-col items-center justify-center text-center transition-all duration-300 glow-white">
+                <span class="text-xs tracking-widest text-black/60 uppercase mb-1">Pencapaian Ujian</span>
+                <span class="text-xl">ANALISIS</span>
+            </a>
+
+            <!-- 7. INTERVENSI (Putih - Diletakkan di tengah pada skrin lebar jika ganjil) -->
+            <a href="PAUTAN_GOOGLE_DRIVE_INTERVENSI_DI_SINI" target="_blank" class="sm:col-span-2 md:col-span-3 lg:col-span-1 button-link bg-white text-black font-extrabold text-lg py-5 px-6 rounded-2xl flex flex-col items-center justify-center text-center transition-all duration-300 glow-white">
+                <span class="text-xs tracking-widest text-black/60 uppercase mb-1">Program Sokongan</span>
+                <span class="text-xl">INTERVENSI</span>
+            </a>
+
+        </main>
+    </div>
+
+    <!-- Modul CHATBOT BAHASAKu (Dilebarkan kepada max-w-3xl / max-w-4xl untuk paparan lebih selesa) -->
+    <div id="modalChatbot" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden justify-center items-center p-3 sm:p-6">
+        <div class="bg-zinc-900 border border-yellow-400/40 w-full max-w-3xl lg:max-w-4xl rounded-3xl flex flex-col overflow-hidden h-[88vh] max-h-[850px] shadow-[0_10px_40px_rgba(0,0,0,0.8)] transition-all duration-300">
+            <!-- Header Modal -->
+            <div class="bg-yellow-400 text-black px-5 py-4 flex justify-between items-center font-bold shadow-md">
+                <div class="flex items-center gap-3">
+                    <span class="text-2xl bg-black text-yellow-400 p-2 rounded-xl flex items-center justify-center">💬</span>
+                    <div>
+                        <h3 class="text-lg sm:text-xl leading-tight font-extrabold tracking-wide">CHATBOT BAHASAKu</h3>
+                        <p class="text-[11px] text-black/80 font-bold tracking-wider">TUTOR PINTAR AI KELAS BAHASA MELAYU MRSMKu</p>
+                    </div>
+                </div>
+                <button onclick="tutupModalAI('chatbot')" class="text-black hover:bg-black hover:text-yellow-400 w-9 h-9 rounded-full flex items-center justify-center text-2xl font-bold transition focus:outline-none" title="Tutup">&times;</button>
+            </div>
+
+            <!-- Ruang Mesej (Dilebarkan dan ruang bacaan lebih luas) -->
+            <div id="ruangMesej" class="flex-grow overflow-y-auto p-4 sm:p-6 space-y-4 no-scrollbar bg-zinc-950/70 text-sm sm:text-base">
+                <div class="bg-yellow-400 text-black p-4 rounded-2xl rounded-tl-none max-w-[90%] sm:max-w-[80%] text-sm sm:text-base font-semibold shadow-md whitespace-pre-wrap leading-relaxed">
+                    Assalamualaikum dan selamat sejahtera! Saya Cikgu AI, tutor peribadi Bahasa Melayu anda. Tanyalah apa-apa sahaja berkenaan tatabahasa, morfologi, analisis karangan SPM, peribahasa, atau kosa kata luas! 🎓✨
+                </div>
+            </div>
+
+            <!-- Loading Status -->
+            <div id="loadingChat" class="hidden px-5 py-2.5 bg-zinc-900/90 text-xs sm:text-sm text-yellow-400 flex items-center gap-2 border-t border-zinc-800">
+                <div class="spinner border-2 border-transparent border-t-yellow-400 w-3.5 h-3.5 rounded-full"></div>
+                <span>Cikgu AI sedang merangka penerangan lengkap...</span>
+            </div>
+
+            <!-- Cadangan Soalan Pantas (Quick Chips) -->
+            <div class="px-4 py-2 bg-zinc-900 border-t border-zinc-800/80 flex items-center gap-2 overflow-x-auto no-scrollbar">
+                <span class="text-[11px] text-gray-400 font-semibold whitespace-nowrap uppercase tracking-wider">Cadangan:</span>
+                <button onclick="pilihCadangan('Beri 5 peribahasa berserta maksud untuk tema perpaduan kaum.')" class="text-xs bg-zinc-800 hover:bg-yellow-400 hover:text-black text-gray-200 px-3 py-1.5 rounded-full whitespace-nowrap border border-zinc-700 transition">💡 Peribahasa SPM</button>
+                <button onclick="pilihCadangan('Terangkan perbezaan penggunaan kata sendi nama di dan pada.')" class="text-xs bg-zinc-800 hover:bg-yellow-400 hover:text-black text-gray-200 px-3 py-1.5 rounded-full whitespace-nowrap border border-zinc-700 transition">📝 Hukum Tatabahasa</button>
+                <button onclick="pilihCadangan('Senaraikan 10 kosa kata tahap tinggi (kosa kata luas) untuk karangan cemerlang.')" class="text-xs bg-zinc-800 hover:bg-yellow-400 hover:text-black text-gray-200 px-3 py-1.5 rounded-full whitespace-nowrap border border-zinc-700 transition">📚 Kosa Kata Luas</button>
+                <button onclick="pilihCadangan('Bagaimanakah cara membina perenggan pendahuluan karangan yang memukau pemeriksa?')" class="text-xs bg-zinc-800 hover:bg-yellow-400 hover:text-black text-gray-200 px-3 py-1.5 rounded-full whitespace-nowrap border border-zinc-700 transition">✍️ Teknik Karangan</button>
+            </div>
+
+            <!-- Ruang Input Mesej -->
+            <div class="p-3 sm:p-4 border-t border-zinc-800 bg-zinc-900 flex gap-2 items-center">
+                <input type="text" id="inputMesej" class="flex-grow bg-zinc-950 border border-zinc-700 p-3 sm:p-3.5 rounded-xl text-sm sm:text-base focus:border-yellow-400 outline-none text-white transition placeholder-gray-500" placeholder="Taip soalan tatabahasa atau karangan anda di sini...">
+                <button onclick="hantarMesejChat()" class="bg-yellow-400 text-black px-5 sm:px-6 py-3 sm:py-3.5 rounded-xl font-extrabold text-sm sm:text-base hover:bg-yellow-500 transition shadow-md focus:outline-none flex items-center gap-1.5">
+                    <span>Hantar</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modul BETUL KE SALAH? -->
+    <div id="modalSemak" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden justify-center items-center p-4">
+        <div class="bg-zinc-900 border border-yellow-400/30 w-full max-w-lg rounded-3xl flex flex-col overflow-hidden max-h-[85vh] shadow-2xl">
+            <!-- Header Modal -->
+            <div class="bg-white text-black p-4 flex justify-between items-center font-bold">
+                <div class="flex items-center gap-2">
+                    <span class="text-xl">🔍</span>
+                    <div>
+                        <h3 class="text-lg leading-tight">BETUL KE SALAH?</h3>
+                        <p class="text-[10px] text-black/70 font-semibold tracking-wider">ANALISIS TATABAHASA AI</p>
+                    </div>
+                </div>
+                <button onclick="tutupModalAI('semak')" class="text-black hover:text-red-700 text-2xl font-bold focus:outline-none">&times;</button>
+            </div>
+            <!-- Kandungan Analisis -->
+            <div class="p-6 overflow-y-auto max-h-[60vh] space-y-6">
+                <p class="text-sm text-gray-300">
+                    Masukkan mana-mana ayat Bahasa Melayu di bawah untuk disemak oleh kecerdasan buatan. AI akan memeriksa ejaan, struktur, dan hukum tatabahasa anda.
+                </p>
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-yellow-400 font-bold mb-2">Ayat Anda:</label>
+                    <textarea id="inputAyatSemak" class="w-full bg-zinc-950 border border-zinc-700 p-3 rounded-xl text-sm focus:border-yellow-400 outline-none h-24 text-white resize-none" placeholder="Contoh: Kami saling bantu-membantu dalam menyelesaikan tugasan itu."></textarea>
+                </div>
+                <!-- Loading Semak -->
+                <div id="loadingSemak" class="hidden text-xs text-yellow-400 flex items-center gap-2">
+                    <div class="spinner border-2 border-transparent border-t-yellow-400 w-3 h-3 rounded-full"></div>
+                    Menganalisis hukum tatabahasa...
+                </div>
+                <!-- Keputusan Analisis -->
+                <div id="keputusanAnalisis" class="hidden space-y-3 p-4 rounded-2xl border bg-zinc-950/40">
+                    <!-- Status dynamic -->
+                </div>
+                <button onclick="semakAyatAI()" class="w-full bg-yellow-400 text-black font-extrabold py-3 rounded-xl hover:bg-yellow-500 transition focus:outline-none">
+                    Mula Semakan
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bahagian Bawah: Motto & Maklumat Pembangun -->
+    <footer class="w-full mt-auto flex flex-col items-center">
+        <!-- Bar Kuning: Motto Sekolah -->
+        <div class="w-full bg-yellow-400 py-3 text-center shadow-[0_-5px_15px_rgba(253,224,71,0.1)]">
+            <p class="text-black font-extrabold text-base sm:text-lg tracking-widest">
+                EXCELLENCE BY DESIGN
+            </p>
+        </div>
+        <!-- Bar Hitam: Kredit Guru -->
+        <div class="w-full bg-black py-4 text-center border-t border-zinc-900">
+            <p class="text-xs text-gray-500 font-medium tracking-wide">
+                Dibangunkan Cikgu Wan Bee 2026
+            </p>
+        </div>
+    </footer>
+
+    <!-- Logik Pengaturcaraan JavaScript -->
+    <script>
+        let sejarahSembang = [];
+
+        // Prompt Sistem bagi Chatbot
+        const promptGuru = "Anda adalah Cikgu AI, guru Bahasa Melayu yang sangat ramah, bermotivasi tinggi, dan pakar dari MRSM Kuantan. Sila jawab soalan murid dengan penerangan yang jelas, berikan contoh yang sesuai, gunakan bahasa yang sopan dan didik, serta galakkan mereka untuk sentiasa mencuba yang terbaik.";
+
+        // Prompt Sistem bagi Penyemak Tatabahasa (Memaksa output berstruktur)
+        const promptSemak = "Anda adalah sistem pakar Tatabahasa Bahasa Melayu. Tugas anda adalah menganalisis ayat yang dikemukakan oleh murid. Anda wajib membekalkan keputusan analisis tatabahasa dalam format JSON berstruktur yang rapi.";
+
+        // Fungsi membuka modal
+        function bukaModalAI(jenis) {
+            if (jenis === 'chatbot') {
+                document.getElementById('modalChatbot').classList.remove('hidden');
+                document.getElementById('modalChatbot').classList.add('flex');
+                document.getElementById('inputMesej').focus();
+            } else if (jenis === 'semak') {
+                document.getElementById('modalSemak').classList.remove('hidden');
+                document.getElementById('modalSemak').classList.add('flex');
+                document.getElementById('inputAyatSemak').focus();
+            }
+        }
+
+        // Fungsi menutup modal
+        function tutupModalAI(jenis) {
+            if (jenis === 'chatbot') {
+                document.getElementById('modalChatbot').classList.add('hidden');
+                document.getElementById('modalChatbot').classList.remove('flex');
+            } else if (jenis === 'semak') {
+                document.getElementById('modalSemak').classList.add('hidden');
+                document.getElementById('modalSemak').classList.remove('flex');
+            }
+        }
+
+        // Semua panggilan AI melalui Netlify Function supaya API key kekal di pelayan.
+        async function panggilAI(data) {
+            const response = await fetch('/.netlify/functions/gemini', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            const result = await response.json().catch(() => ({}));
+            if (!response.ok) throw new Error(result.error || 'Permintaan AI gagal.');
+            return result;
+        }
+
+        function escapeHtml(teks) {
+            return String(teks).replace(/[&<>"']/g, aksara => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            })[aksara]);
+        }
+
+        // Logik CHATBOT BAHASAKu
+        async function hantarMesejChat() {
+            const input = document.getElementById('inputMesej');
+            const mesejTeks = input.value.trim();
+            if (!mesejTeks) return;
+
+            // Tambah mesej murid ke dalam ruang sembang
+            tambahGelembungMesej(mesejTeks, 'user');
+            input.value = '';
+
+            sejarahSembang.push({ role: "user", parts: [{ text: mesejTeks }] });
+            if (sejarahSembang.length > 20) sejarahSembang.splice(0, 2);
+            
+            const loadingIndicator = document.getElementById('loadingChat');
+            loadingIndicator.classList.remove('hidden');
+
+            try {
+                const result = await panggilAI({ tindakan: 'chat', kandungan: sejarahSembang });
+                tambahGelembungMesej(result.teks, 'bot');
+                sejarahSembang.push({ role: "model", parts: [{ text: result.teks }] });
+            } catch (ralat) {
+                tambahGelembungMesej(ralat.message || "Maaf, Cikgu AI sedang menghadapi kesukaran talian ketika ini. Sila cuba lagi.", 'bot');
+            } finally {
+                loadingIndicator.classList.add('hidden');
+            }
+        }
+
+        // Fungsi meletakkan mesej ke dalam elemen HTML
+        function tambahGelembungMesej(teks, pemanggil) {
+            const container = document.getElementById('ruangMesej');
+            const divOuter = document.createElement('div');
+            divOuter.className = "flex w-full";
+            
+            const divInner = document.createElement('div');
+            divInner.className = pemanggil === 'user' 
+                ? "bg-zinc-800 text-white p-3.5 sm:p-4 rounded-2xl rounded-tr-none max-w-[90%] sm:max-w-[75%] text-sm sm:text-base shadow ml-auto whitespace-pre-wrap leading-relaxed border border-zinc-700"
+                : "bg-yellow-400 text-black p-3.5 sm:p-4 rounded-2xl rounded-tl-none max-w-[90%] sm:max-w-[80%] text-sm sm:text-base font-semibold shadow mr-auto whitespace-pre-wrap leading-relaxed";
+
+            divInner.textContent = teks;
+
+            // Integrasi butang sebutan (TTS) jika dijana oleh AI
+            if (pemanggil === 'bot') {
+                const playButton = document.createElement('button');
+                playButton.className = "inline-flex mt-2.5 text-xs font-bold bg-black/10 hover:bg-black/20 text-black px-2.5 py-1 rounded-lg items-center gap-1.5 transition";
+                playButton.innerHTML = "🔊 Dengar Sebutan";
+                playButton.onclick = () => sebutJawapanAI(teks, playButton);
+                divInner.appendChild(playButton);
+            }
+
+            divOuter.appendChild(divInner);
+            container.appendChild(divOuter);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // Fungsi untuk memilih soalan cadangan pantas
+        function pilihCadangan(soalan) {
+            const input = document.getElementById('inputMesej');
+            input.value = soalan;
+            hantarMesejChat();
+        }
+
+        // Logik BETUL KE SALAH? (Penyemak Tatabahasa)
+        async function semakAyatAI() {
+            const inputTextarea = document.getElementById('inputAyatSemak');
+            const ayat = inputTextarea.value.trim();
+            if (!ayat) return;
+
+            const loading = document.getElementById('loadingSemak');
+            const boxKeputusan = document.getElementById('keputusanAnalisis');
+            
+            loading.classList.remove('hidden');
+            boxKeputusan.classList.add('hidden');
+
+            try {
+                const { data } = await panggilAI({ tindakan: 'semak', ayat });
+
+                boxKeputusan.innerHTML = "";
+                boxKeputusan.classList.remove('hidden');
+
+                // Set warna sempadan dan latar belakang mengikut keputusan status
+                if (data.status === "BETUL") {
+                    boxKeputusan.className = "space-y-3 p-4 rounded-2xl border border-green-500 bg-green-500/10 text-green-300";
+                    boxKeputusan.innerHTML = `
+                        <div class="flex items-center gap-2 font-bold text-lg">
+                            <span>✅</span> <span>STATUS: BETUL</span>
+                        </div>
+                        <p class="text-sm"><span class="font-bold text-white">Sebab / Analisis:</span> ${escapeHtml(data.penerangan)}</p>
+                    `;
+                } else {
+                    boxKeputusan.className = "space-y-3 p-4 rounded-2xl border border-red-500 bg-red-500/10 text-red-300";
+                    boxKeputusan.innerHTML = `
+                        <div class="flex items-center gap-2 font-bold text-lg">
+                            <span>❌</span> <span>STATUS: SALAH / BOLEH DIPERBAIKI</span>
+                        </div>
+                        <p class="text-sm"><span class="font-bold text-white">Cadangan Pembetulan:</span> <span class="text-yellow-400 font-semibold underline">${escapeHtml(data.pembetulan)}</span></p>
+                        <p class="text-sm"><span class="font-bold text-white">Analisis Kesalahan:</span> ${escapeHtml(data.penerangan)}</p>
+                    `;
+                }
+
+            } catch (ralat) {
+                boxKeputusan.className = "p-4 rounded-2xl border border-zinc-700 bg-zinc-900 text-gray-300 text-sm";
+                boxKeputusan.textContent = "Gagal memproses analisis. Sila pastikan ayat anda sah atau cuba lagi sebentar.";
+                boxKeputusan.classList.remove('hidden');
+            } finally {
+                loading.classList.add('hidden');
+            }
+        }
+
+        // Logik Teks-ke-Suara (TTS) Menggunakan Gemini AI Voice Model
+        async function sebutJawapanAI(teks, butang) {
+            butang.innerHTML = "⏳ Menjana suara...";
+            butang.disabled = true;
+
+            try {
+                const { audio: audioBase64 } = await panggilAI({ tindakan: 'tts', teks });
+                if (!audioBase64) throw new Error("Suara tidak berjaya dijana.");
+                const urlAudio = URL.createObjectURL(new Blob([Uint8Array.from(atob(audioBase64), c => c.charCodeAt(0))], { type: 'audio/wav' }));
+                const audio = new Audio(urlAudio);
+                
+                audio.play();
+                butang.innerHTML = "🔊 Sedang bersuara...";
+                audio.onended = () => {
+                    butang.innerHTML = "🔊 Dengar Sebutan";
+                    butang.disabled = false;
+                };
+
+            } catch (ralat) {
+                console.error(ralat);
+                butang.innerHTML = "❌ Gagal memuatkan audio";
+                setTimeout(() => {
+                    butang.innerHTML = "🔊 Dengar Sebutan";
+                    butang.disabled = false;
+                }, 2000);
+            }
+        }
+
+        // Fungsi utiliti untuk menukar isyarat PCM kepada format WAV yang boleh dimainkan terus oleh pelayar web
+        function tukarPcmKeWav(dataBase64, sampleRate) {
+            const penimbalPcm = Uint8Array.from(atob(dataBase64), karakter => karakter.charCodeAt(0)).buffer;
+            const pengepalaWav = new ArrayBuffer(44);
+            const pandanganData = new DataView(pengepalaWav);
+            const pcm16 = new Int16Array(penimbalPcm);
+
+            const tulisString = (anjakan, rentetan) => {
+                for (let indeks = 0; indeks < rentetan.length; indeks++) {
+                    pandanganData.setUint8(anjakan + indeks, rentetan.charCodeAt(indeks));
+                }
+            };
+
+            tulisString(0, 'RIFF');
+            pandanganData.setUint32(4, 36 + pcm16.length * 2, true);
+            tulisString(8, 'WAVE');
+            tulisString(12, 'fmt ');
+            pandanganData.setUint32(16, 16, true);
+            pandanganData.setUint16(20, 1, true); // PCM Format Linear
+            pandanganData.setUint16(22, 1, true); // 1 Saluran (Mono)
+            pandanganData.setUint32(24, sampleRate, true);
+            pandanganData.setUint32(28, sampleRate * 2, true);
+            pandanganData.setUint16(32, 2, true);
+            pandanganData.setUint16(34, 16, true); // 16-bit
+            tulisString(36, 'data');
+            pandanganData.setUint32(40, pcm16.length * 2, true);
+
+            return new Blob([pengepalaWav, penimbalPcm], { type: 'audio/wav' });
+        }
+
+        // Event listener untuk penghantaran mesej melalui Enter
+        document.getElementById('inputMesej').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') hantarMesejChat();
+        });
+    </script>
+</body>
+</html>
+
