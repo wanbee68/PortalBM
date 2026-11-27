@@ -98,9 +98,9 @@
             </a>
 
             <!-- 6. SOALAN SPM SEBENAR (Putih) -->
-            <a href="https://drive.google.com/drive/folders/1N7ZvzGXJ3NZGTsFPIc8VlSYEuRQ3jtFP?usp=sharing" target="_blank" class="button-link bg-white text-black font-extrabold text-lg py-5 px-6 rounded-2xl flex flex-col items-center justify-center text-center transition-all duration-300 glow-white">
+            <a href="#" onclick="bukaModalSPMU(); return false;" aria-haspopup="dialog" aria-controls="modalSPMU" class="button-link bg-white text-black font-extrabold text-lg py-5 px-6 rounded-2xl flex flex-col items-center justify-center text-center transition-all duration-300 glow-white">
                 <span class="text-xs tracking-widest text-black/60 uppercase mb-1">Kertas SPM Lepas</span>
-                <span class="text-xl">SOALAN SEBENAR SPM</span>
+                <span class="text-xl">SOALAN SPM SEBENAR</span>
             </a>
 
             <!-- 7. INTERVENSI (Putih - Diletakkan di tengah pada skrin lebar jika ganjil) -->
@@ -110,6 +110,25 @@
             </a>
 
         </main>
+    </div>
+
+    <!-- Modul Paparan Soalan SPMU 2026 -->
+    <div id="modalSPMU" role="dialog" aria-modal="true" aria-labelledby="tajukModalSPMU" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden justify-center items-center p-3 sm:p-6">
+        <div class="bg-zinc-900 border border-yellow-400/40 w-full max-w-5xl rounded-3xl flex flex-col overflow-hidden h-[90vh] max-h-[900px] shadow-[0_10px_40px_rgba(0,0,0,0.8)]">
+            <div class="bg-yellow-400 text-black px-5 py-4 flex justify-between items-center font-bold shadow-md">
+                <div>
+                    <h3 id="tajukModalSPMU" class="text-lg sm:text-xl leading-tight font-extrabold tracking-wide">SOALAN SPMU 2026</h3>
+                    <p class="text-[11px] text-black/80 font-bold tracking-wider">KERTAS PEPERIKSAAN SEBENAR</p>
+                </div>
+                <button onclick="tutupModalSPMU()" class="text-black hover:bg-black hover:text-yellow-400 w-9 h-9 rounded-full flex items-center justify-center text-2xl font-bold transition focus:outline-none" title="Tutup paparan soalan">&times;</button>
+            </div>
+            <div class="px-4 py-3 bg-zinc-900 border-b border-zinc-800 flex flex-wrap items-center gap-2">
+                <button id="butangSPMUK1" onclick="pilihKertasSPMU('k1')" class="px-4 py-2 rounded-xl border text-sm font-bold transition">KERTAS 1</button>
+                <button id="butangSPMUK2" onclick="pilihKertasSPMU('k2')" class="px-4 py-2 rounded-xl border text-sm font-bold transition">KERTAS 2</button>
+                <a id="pautanBukaSPMU" href="https://drive.google.com/file/d/1Hg4FjVg15qbyVlhcXwYzt6dIxJI1sN8m/view?usp=sharing" target="_blank" rel="noopener" class="ml-auto text-xs sm:text-sm text-yellow-300 hover:text-yellow-200 underline">Buka PDF berasingan ↗</a>
+            </div>
+            <iframe id="paparanKertasSPMU" title="Paparan Kertas 1 SPMU 2026" src="https://drive.google.com/file/d/1Hg4FjVg15qbyVlhcXwYzt6dIxJI1sN8m/preview" class="w-full flex-1 min-h-0 bg-white" loading="lazy" allow="autoplay"></iframe>
+        </div>
     </div>
 
     <!-- Modul CHATBOT BAHASAKu (Dilebarkan kepada max-w-3xl / max-w-4xl untuk paparan lebih selesa) -->
@@ -247,6 +266,41 @@
                 document.getElementById('modalSemak').classList.add('hidden');
                 document.getElementById('modalSemak').classList.remove('flex');
             }
+        }
+
+        // Paparan PDF SPMU terus dalam portal.
+        const failSPMU = {
+            k1: { id: '1Hg4FjVg15qbyVlhcXwYzt6dIxJI1sN8m', nama: 'Kertas 1' },
+            k2: { id: '1mR-zoXz9PmL6GF3f6PMGpXXLmayOvbnz', nama: 'Kertas 2' }
+        };
+
+        function bukaModalSPMU() {
+            const modal = document.getElementById('modalSPMU');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            pilihKertasSPMU('k1');
+        }
+
+        function tutupModalSPMU() {
+            const modal = document.getElementById('modalSPMU');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function pilihKertasSPMU(kertas) {
+            const fail = failSPMU[kertas];
+            const iframe = document.getElementById('paparanKertasSPMU');
+            iframe.src = `https://drive.google.com/file/d/${fail.id}/preview`;
+            iframe.title = `Paparan ${fail.nama} SPMU 2026`;
+            document.getElementById('pautanBukaSPMU').href = `https://drive.google.com/file/d/${fail.id}/view?usp=sharing`;
+
+            ['k1', 'k2'].forEach(kod => {
+                const butang = document.getElementById(kod === 'k1' ? 'butangSPMUK1' : 'butangSPMUK2');
+                const aktif = kod === kertas;
+                butang.className = aktif
+                    ? 'px-4 py-2 rounded-xl border text-sm font-bold transition bg-yellow-400 text-black border-yellow-400'
+                    : 'px-4 py-2 rounded-xl border text-sm font-bold transition bg-zinc-800 text-gray-200 border-zinc-700 hover:bg-zinc-700';
+            });
         }
 
         // Semua panggilan AI melalui Netlify Function supaya API key kekal di pelayan.
