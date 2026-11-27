@@ -58,6 +58,7 @@ export async function handler(event) {
       const teks = await callGemini(MODEL_TEXT, {
         contents: kandungan,
         systemInstruction: { parts: [{ text: PROMPT_GURU }] },
+        generationConfig: { thinkingConfig: { thinkingLevel: "low" } },
       }, apiKey);
       return json({ teks });
     }
@@ -70,6 +71,7 @@ export async function handler(event) {
         contents: [{ role: "user", parts: [{ text: `Analisis ayat ini: ${input.ayat.trim()}` }] }],
         systemInstruction: { parts: [{ text: PROMPT_SEMAK }] },
         generationConfig: {
+          thinkingConfig: { thinkingLevel: "low" },
           responseMimeType: "application/json",
           responseSchema: {
             type: "OBJECT",
