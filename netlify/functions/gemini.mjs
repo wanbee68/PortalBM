@@ -1,4 +1,4 @@
-const MODEL_TEXT = "gemini-3.8-flash";
+const MODEL_TEXT = "gemini-3.5-flash-lite";
 const MODEL_TTS = "gemini-3.8-flash-tts";
 const PROMPT_GURU = "Anda ialah Cikgu AI, guru Bahasa Melayu yang ramah dan pakar. Jawab dalam Bahasa Melayu yang jelas dan sopan, sertakan contoh sesuai, dan galakkan murid belajar.";
 const PROMPT_SEMAK = "Anda ialah pakar tatabahasa Bahasa Melayu. Analisis ayat murid dan pulangkan JSON sahaja dengan medan status (BETUL atau SALAH), penerangan, dan pembetulan. Berikan pembetulan yang sama dengan ayat asal jika ayat itu betul.";
@@ -58,7 +58,7 @@ export async function handler(event) {
       const teks = await callGemini(MODEL_TEXT, {
         contents: kandungan,
         systemInstruction: { parts: [{ text: PROMPT_GURU }] },
-        generationConfig: { thinkingConfig: { thinkingLevel: "low" } },
+        generationConfig: { thinkingConfig: { thinkingLevel: "minimal" } },
       }, apiKey);
       return json({ teks });
     }
@@ -71,7 +71,7 @@ export async function handler(event) {
         contents: [{ role: "user", parts: [{ text: `Analisis ayat ini: ${input.ayat.trim()}` }] }],
         systemInstruction: { parts: [{ text: PROMPT_SEMAK }] },
         generationConfig: {
-          thinkingConfig: { thinkingLevel: "low" },
+          thinkingConfig: { thinkingLevel: "minimal" },
           responseMimeType: "application/json",
           responseSchema: {
             type: "OBJECT",
