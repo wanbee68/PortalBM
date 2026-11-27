@@ -38,6 +38,13 @@
         .spinner {
             animation: spin 1s linear infinite;
         }
+        .ruang-jawapan-bergaris {
+            line-height: 32px;
+            background-color: #f8fafc;
+            background-image: repeating-linear-gradient(to bottom, #f8fafc 0, #f8fafc 31px, #60a5fa 31px, #60a5fa 32px);
+            background-size: 100% 32px;
+            background-attachment: local;
+        }
     </style>
 </head>
 <body class="text-white min-h-screen flex flex-col justify-between">
@@ -125,9 +132,38 @@
             <div class="px-4 py-3 bg-zinc-900 border-b border-zinc-800 flex flex-wrap items-center gap-2">
                 <button id="butangSPMUK1" onclick="pilihKertasSPMU('k1')" class="px-4 py-2 rounded-xl border text-sm font-bold transition">KERTAS 1</button>
                 <button id="butangSPMUK2" onclick="pilihKertasSPMU('k2')" class="px-4 py-2 rounded-xl border text-sm font-bold transition">KERTAS 2</button>
+                <button id="butangJawabSPMU" onclick="bukaRuangJawapanSPMU()" aria-haspopup="dialog" aria-controls="modalJawabSPMU" class="px-4 py-2 rounded-xl border border-blue-400 bg-blue-500 text-white text-sm font-extrabold hover:bg-blue-600 transition">J (JAWAB)</button>
                 <a id="pautanBukaSPMU" href="https://drive.google.com/file/d/1Hg4FjVg15qbyVlhcXwYzt6dIxJI1sN8m/view?usp=sharing" target="_blank" rel="noopener" class="ml-auto text-xs sm:text-sm text-yellow-300 hover:text-yellow-200 underline">Buka PDF berasingan ↗</a>
             </div>
             <iframe id="paparanKertasSPMU" title="Paparan Kertas 1 SPMU 2026" src="https://drive.google.com/file/d/1Hg4FjVg15qbyVlhcXwYzt6dIxJI1sN8m/preview" class="w-full flex-1 min-h-0 bg-white" loading="lazy" allow="autoplay"></iframe>
+        </div>
+    </div>
+
+    <!-- Ruang jawapan buku bergaris -->
+    <div id="modalJawabSPMU" role="dialog" aria-modal="true" aria-labelledby="tajukRuangJawapanSPMU" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[60] hidden justify-center items-center p-3 sm:p-6">
+        <div class="bg-zinc-900 border border-blue-400/60 w-full max-w-4xl rounded-3xl flex flex-col overflow-hidden h-[90vh] max-h-[900px] shadow-2xl">
+            <div class="bg-yellow-400 text-black px-5 py-4 flex justify-between items-center font-bold shadow-md">
+                <div>
+                    <h3 id="tajukRuangJawapanSPMU" class="text-lg sm:text-xl leading-tight font-extrabold tracking-wide">RUANG JAWAPAN</h3>
+                    <p id="labelKertasJawapanSPMU" class="text-[11px] text-black/80 font-bold tracking-wider">SPMU 2026 · KERTAS 1</p>
+                </div>
+                <button onclick="tutupRuangJawapanSPMU()" class="text-black hover:bg-black hover:text-yellow-400 w-9 h-9 rounded-full flex items-center justify-center text-2xl font-bold transition focus:outline-none" title="Tutup ruang jawapan">&times;</button>
+            </div>
+            <div class="px-4 py-3 bg-zinc-900 border-b border-zinc-800 flex flex-wrap justify-between items-center gap-2">
+                <p class="text-xs sm:text-sm text-gray-300">Taip jawapan anda pada ruang buku bergaris biru.</p>
+                <p class="text-sm font-bold text-blue-300"><span id="jumlahPerkataanSPMU">0</span> patah perkataan</p>
+            </div>
+            <textarea id="teksJawapanSPMU" oninput="kiraPerkataanSPMU()" class="ruang-jawapan-bergaris flex-1 min-h-0 w-full resize-none border-0 px-5 py-2.5 text-gray-900 text-base sm:text-lg focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-400" placeholder="Taip jawapan anda di sini..."></textarea>
+            <div class="p-4 bg-zinc-900 border-t border-zinc-800 grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-3 items-end">
+                <div>
+                    <label for="nomborWhatsAppGuruSPMU" class="block text-xs font-bold text-gray-200 mb-1.5">Nombor WhatsApp guru</label>
+                    <input id="nomborWhatsAppGuruSPMU" type="tel" inputmode="tel" autocomplete="tel" class="w-full bg-zinc-950 border border-zinc-700 p-3 rounded-xl text-sm text-white focus:border-blue-400 outline-none" placeholder="Contoh: 60123456789 (tanpa + atau sengkang)">
+                    <p id="ralatJawabSPMU" class="hidden mt-1.5 text-xs text-red-300" role="status"></p>
+                    <a id="pautanWhatsAppSPMU" class="hidden mt-2 text-sm text-green-300 underline" target="_blank" rel="noopener noreferrer">Klik di sini untuk buka WhatsApp</a>
+                </div>
+                <button onclick="hantarJawapanWhatsAppSPMU()" class="bg-green-500 text-white px-5 py-3 rounded-xl font-extrabold text-sm hover:bg-green-600 transition focus:outline-none">Hantar ke WhatsApp ↗</button>
+                <p class="sm:col-span-2 text-[11px] text-gray-400">WhatsApp akan dibuka dengan jawapan terisi. Tekan <strong>Hantar</strong> di WhatsApp untuk menghantarnya kepada guru.</p>
+            </div>
         </div>
     </div>
 
@@ -273,6 +309,7 @@
             k1: { id: '1Hg4FjVg15qbyVlhcXwYzt6dIxJI1sN8m', nama: 'Kertas 1' },
             k2: { id: '1mR-zoXz9PmL6GF3f6PMGpXXLmayOvbnz', nama: 'Kertas 2' }
         };
+        let kertasAktifSPMU = 'k1';
 
         function bukaModalSPMU() {
             const modal = document.getElementById('modalSPMU');
@@ -288,6 +325,7 @@
         }
 
         function pilihKertasSPMU(kertas) {
+            kertasAktifSPMU = kertas;
             const fail = failSPMU[kertas];
             const iframe = document.getElementById('paparanKertasSPMU');
             iframe.src = `https://drive.google.com/file/d/${fail.id}/preview`;
@@ -301,6 +339,67 @@
                     ? 'px-4 py-2 rounded-xl border text-sm font-bold transition bg-yellow-400 text-black border-yellow-400'
                     : 'px-4 py-2 rounded-xl border text-sm font-bold transition bg-zinc-800 text-gray-200 border-zinc-700 hover:bg-zinc-700';
             });
+        }
+
+        function bukaRuangJawapanSPMU() {
+            document.getElementById('labelKertasJawapanSPMU').textContent = `SPMU 2026 · ${failSPMU[kertasAktifSPMU].nama.toUpperCase()}`;
+            document.getElementById('ralatJawabSPMU').classList.add('hidden');
+            document.getElementById('pautanWhatsAppSPMU').classList.add('hidden');
+            const modal = document.getElementById('modalJawabSPMU');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.getElementById('teksJawapanSPMU').focus();
+        }
+
+        function tutupRuangJawapanSPMU() {
+            const modal = document.getElementById('modalJawabSPMU');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function kiraPerkataanSPMU() {
+            const jawapan = document.getElementById('teksJawapanSPMU').value.trim();
+            const jumlah = jawapan ? jawapan.split(/\s+/u).filter(Boolean).length : 0;
+            document.getElementById('jumlahPerkataanSPMU').textContent = jumlah;
+        }
+
+        function hantarJawapanWhatsAppSPMU() {
+            const medanNombor = document.getElementById('nomborWhatsAppGuruSPMU');
+            const jawapan = document.getElementById('teksJawapanSPMU').value.trim();
+            const ralat = document.getElementById('ralatJawabSPMU');
+            const pautan = document.getElementById('pautanWhatsAppSPMU');
+            ralat.textContent = '';
+            ralat.classList.add('hidden');
+            pautan.classList.add('hidden');
+
+            if (!jawapan) {
+                ralat.textContent = 'Sila taip jawapan dahulu.';
+                ralat.classList.remove('hidden');
+                document.getElementById('teksJawapanSPMU').focus();
+                return;
+            }
+
+            let nombor = medanNombor.value.replace(/\D/g, '');
+            if (nombor.startsWith('00')) nombor = nombor.slice(2);
+            if (nombor.startsWith('0')) nombor = `60${nombor.slice(1)}`;
+            if (nombor.length < 8 || nombor.length > 15) {
+                ralat.textContent = 'Masukkan nombor WhatsApp guru yang sah, termasuk kod negara (contoh Malaysia: 60123456789).';
+                ralat.classList.remove('hidden');
+                medanNombor.focus();
+                return;
+            }
+
+            const kertas = failSPMU[kertasAktifSPMU].nama;
+            const mesej = `Salam cikgu, berikut jawapan saya untuk SPMU 2026 ${kertas}:\n\n${jawapan}\n\nJumlah perkataan: ${document.getElementById('jumlahPerkataanSPMU').textContent}`;
+            const urlWhatsApp = `https://wa.me/${nombor}?text=${encodeURIComponent(mesej)}`;
+            pautan.href = urlWhatsApp;
+            const tetingkap = window.open(urlWhatsApp, '_blank');
+            if (tetingkap) tetingkap.opener = null;
+            else {
+                pautan.classList.remove('hidden');
+                ralat.textContent = 'Pelayar menyekat tetingkap baharu. Gunakan pautan WhatsApp yang dipaparkan di atas.';
+                ralat.classList.remove('hidden');
+            }
         }
 
         // Semua panggilan AI melalui Netlify Function supaya API key kekal di pelayan.
